@@ -1,0 +1,12 @@
+Package: atriar
+Title: Fast exact and approximate nearest neighbors.
+Version: 0.0.0.9000
+Authors@R: person("Christian", "Merkwirth", email = "ChristianMerkwirth@gmail.com", role = c("aut", "cre"))
+Description: Code for fast nearest neighbor and range searches, plus functions to compute the correlation sum.
+Depends: R (>= 3.4.3)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+LinkingTo: Rcpp
+Imports: Rcpp
+Suggests: testthat
