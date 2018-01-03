@@ -2,38 +2,38 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 create_searcher <- function(x, metric = "euclidian", exclude_samples = 0L, cluster_max_points = 64L) {
-    .Call(`_atriar_create_searcher`, x, metric, exclude_samples, cluster_max_points)
+    .Call('_atriar_create_searcher', PACKAGE = 'atriar', x, metric, exclude_samples, cluster_max_points)
 }
 
 release_searcher <- function(searcher) {
-    .Call(`_atriar_release_searcher`, searcher)
+    .Call('_atriar_release_searcher', PACKAGE = 'atriar', searcher)
 }
 
 number_of_points <- function(searcher) {
-    .Call(`_atriar_number_of_points`, searcher)
+    .Call('_atriar_number_of_points', PACKAGE = 'atriar', searcher)
 }
 
 data_set_radius <- function(searcher) {
-    .Call(`_atriar_data_set_radius`, searcher)
+    .Call('_atriar_data_set_radius', PACKAGE = 'atriar', searcher)
 }
 
 search_k_neighbors <- function(searcher, k, query_points, exclude = matrix(), epsilon = 0) {
-    .Call(`_atriar_search_k_neighbors`, searcher, k, query_points, exclude, epsilon)
+    .Call('_atriar_search_k_neighbors', PACKAGE = 'atriar', searcher, k, query_points, exclude, epsilon)
 }
 
 search_range <- function(searcher, radius, query_points, exclude = matrix()) {
-    .Call(`_atriar_search_range`, searcher, radius, query_points, exclude)
+    .Call('_atriar_search_range', PACKAGE = 'atriar', searcher, radius, query_points, exclude)
 }
 
 boxcount <- function(x, verbose = FALSE) {
-    .Call(`_atriar_boxcount`, x, verbose)
+    .Call('_atriar_boxcount', PACKAGE = 'atriar', x, verbose)
 }
 
 count_integers <- function(bins, max_bin = -1L) {
-    .Call(`_atriar_count_integers`, bins, max_bin)
+    .Call('_atriar_count_integers', PACKAGE = 'atriar', bins, max_bin)
 }
 
 henon <- function(length = 2000L, params = as.numeric( c()), transient = 5000L) {
-    .Call(`_atriar_henon`, length, params, transient)
+    .Call('_atriar_henon', PACKAGE = 'atriar', length, params, transient)
 }
 

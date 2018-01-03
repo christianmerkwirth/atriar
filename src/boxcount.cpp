@@ -14,19 +14,15 @@
 #include "Rcpp.h"
 #include "ternary_search_tree.h"
 
-#define LOGARITHM_OF_2 0.69314718055995
-#define MAXDIM 1024
-
 using namespace std;
 using namespace Rcpp;
 
-inline double log_dualis(const double x) { return (log(x) / LOGARITHM_OF_2); }
 inline double max(double a, double b) { return ((a >= b) ? a : b); }
 inline double min(double a, double b) { return ((a <= b) ? a : b); }
 
 class dim_estimator {
 protected:
-  vector<long> boxes_; // scaling of number of boxes for dimensions from 1 to dim
+  vector<long> boxes_;   // scaling of number of boxes for dimensions from 1 to dim
   vector<double> info_;  // scaling of information for dimensions from 1 to dim
   vector<double> corr_;  // scaling of correlation for dimensions from 1 to dim
 
@@ -44,30 +40,27 @@ public:
   void operator()(const long mass, const int level) {
     const double p_i = (((double)mass) / (double)N_); // relative frequency
 
-    total_points_ += mass; // Check we got all points
-    boxes_[level]++;       // D0 = count boxes (to calculate capacity dimension)
-    info_[level] += (p_i * log_dualis(p_i)); // information dimension
-    corr_[level] += p_i * p_i;               // correlation dimension
+    total_points_ += mass;                    // Check we got all points.
+    if (mass)
+      boxes_[level]++;                          // Count boxes with at least one point
+    info_[level] += (p_i * log2(p_i));        // entropy
+    corr_[level] += p_i * p_i;                // correlation
   }
 
   // Mainly used to check if all points were inserted correctly into the tree.
   long get_total_points() const {
     return total_points_;
   }
-  // Below functions to read out results.
-  double boxd(const long d) const { return -log_dualis((double)boxes_[d]); }
+  // Functions to read out results below.
+  double boxd(const long d) const { return -log2(boxes_[d]); }
   double infod(const long d) const { return info_[d]; }
-  double corrd(const long d) const { return log_dualis(corr_[d]); }
+  double corrd(const long d) const { return log2(corr_[d]); }
 };
 
 // [[Rcpp::export]]
 List boxcount(IntegerMatrix x, bool verbose = false) {
   const long N = x.nrow();
   const long dim = x.ncol();
-
-  if (dim > MAXDIM) {
-    throw Rcpp::exception("Maximum number of input columns exceeded.");
-  }
 
   NumericMatrix result(3, dim);
 
@@ -79,7 +72,7 @@ List boxcount(IntegerMatrix x, bool verbose = false) {
     Rcout << "Filling ternary search tree." << std::endl;
   }
   for (long index = 0; index < N; index++) {
-    long key[MAXDIM];
+    long key[dim];
     for (long d = 0; d < dim; d++) {
       key[d] = x(index, d);
     }
