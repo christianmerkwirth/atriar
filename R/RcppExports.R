@@ -25,6 +25,10 @@ search_range <- function(searcher, radius, query_points, exclude = matrix()) {
     .Call(`_atriar_search_range`, searcher, radius, query_points, exclude)
 }
 
+boxcount <- function(x, verbose = FALSE) {
+    .Call(`_atriar_boxcount`, x, verbose)
+}
+
 count_integers <- function(bins, max_bin = -1L) {
     .Call(`_atriar_count_integers`, bins, max_bin)
 }

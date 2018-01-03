@@ -31,3 +31,14 @@ print(lm(y ~ x, data = data.frame(x = x, y = y)[2:18,]))
 
 # Delete the searcher object.
 release_searcher(searcher)
+
+# Next lets use the boxcounting approach
+res <- boxcounting(data, dist.breaks)
+plot(log(res$dists), res$corrd[, 2])
+x <- log2(res$dists)
+y <- res$corrd[, 2]
+print(lm(y ~ x, data = data.frame(x = x, y = y)[10:24,]))
+
+
+
+
