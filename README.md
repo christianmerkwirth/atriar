@@ -19,7 +19,7 @@ The package is not (yet) on CRAN. You can also use the development version from 
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("christianmerkwirth/atriar", ref = "develop")
+devtools::install_github("christianmerkwirth/atriar")
 ```
 
 The package is tested to build successfully on OS X and on Linux.
@@ -63,6 +63,9 @@ nn <- search_k_neighbors(
   )
   
 str(nn)
+
+# Cleanup, delete the searcher object.
+release_searcher(searcher)
 ```
 
 The output list returned by search\_k\_neighbors contains fields *index* and *dist* which both are matrices with as many rows as there were query points. Indices are 1-based and can be used to index R matrices without rebasing.
@@ -71,7 +74,28 @@ In general, reference points query.points can be arbitrarily located, but it is 
 
 ### Approximate k-Nearest Neighbor Queries
 
-Approximate nearest neighbors algorithms report neighbors to the query point q with distances possibly greater than the true nearest neighbors distances. The maximal allowed relative error, named epsilon, is given as a parameter to the algorithm. For epsilon =0, the approximate search returns the true (exact) nearest neighbor(s). Computing exact nearest neighbors for data set with intrinsic dimension much higher than 6 seems to be a very time-consuming task. Few algorithms seem to perform significantly better than a brute-force computation of all distances. However, it has been shown that by computing nearest neighbors approximately, it is possible to achieve significantly faster execution times with relatively small actual errors in the reported distances. See (<https://github.com/erikbern/ann-benchmarks>) for a more thorough comparison of k-NN implementations.
+Approximate nearest neighbors algorithms report neighbors to the query point q with distances possibly greater than the true nearest neighbors distances. The maximal allowed relative error, named *epsilon*, is given as a parameter to the algorithm. For epsilon =0, the approximate search returns the true (exact) nearest neighbor(s). Computing exact nearest neighbors for data set with intrinsic dimension much higher than 6 seems to be a very time-consuming task. Few algorithms seem to perform significantly better than a brute-force computation of all distances. However, it has been shown that by computing nearest neighbors approximately, it is possible to achieve significantly faster execution times with relatively small actual errors in the reported distances. See (<https://github.com/erikbern/ann-benchmarks>) for a more thorough comparison of k-NN implementations.
+
+``` r
+# Create a set of points in 12-d.
+D <- 12
+points <- matrix(runif(1e6), ncol=D)
+# Creating the ATRIA nearest neighbor searcher object.
+searcher = create_searcher(points, metric="euclidian")
+
+k.max <- 8
+rand.sample <- sample.int(nrow(points), size = 1000)
+
+library(microbenchmark)
+microbenchmark(
+  search_k_neighbors(searcher, k.max, points[rand.sample, ]),
+  search_k_neighbors(searcher, k.max, points[rand.sample, ], epsilon=3.0),
+  times=10)
+
+
+# Cleanup, delete the searcher object.
+release_searcher(searcher)
+```
 
 ### Range queries
 
@@ -96,9 +120,12 @@ nn <- search_range(
 )
   
 str(nn)
+
+# Cleanup, delete the searcher object.
+release_searcher(searcher)
 ```
 
-The index and distance vectors for a signle query point have the length that is given in count. Both vectors are not sorted by distance.
+The index and distance vectors for a single query point have the length that is given in count. Both vectors are not sorted by distance.
 
 Boxcounting
 -----------
