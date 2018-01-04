@@ -1,6 +1,7 @@
 // [[Rcpp::plugins("cpp11")]]
+// [[Rcpp::depends(RcppArmadillo)]]
 
-#include <Rcpp.h>
+#include<RcppArmadillo.h>
 
 using namespace Rcpp;
 
