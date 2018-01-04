@@ -110,7 +110,6 @@ microbenchmark(
 release_searcher(searcher)
 ```
 
-
 ### Range queries
 
 In the task of range searching , we ask for all points of data set P that have distance r or less from the query point q. Sometimes range searching is called a fixed size approach, while k nearest neighbors searching is called a fixed mass approach.
@@ -139,7 +138,6 @@ str(nn)
 # Cleanup, delete the searcher object.
 release_searcher(searcher)
 ```
-
 
 The index and distance vectors for a single query point have the length that is given in count. Both vectors are not sorted by distance.
 
@@ -224,6 +222,47 @@ x <- log2(res$dists)
 y <- res$boxd[, 2]
 print(lm(y ~ x, data = data.frame(x = x, y = y)[10:24,]))
 ```
+
+
+## Benchmarking against other packages
+
+``` r
+library(RcppAnnoy)
+library(RANN)
+library(microbenchmark)
+library(h5)
+
+file <- h5file('/Users/cmerk/Downloads/mnist-784-euclidean.hdf5', mode='r')
+train <- file['train'][]
+test <- file['test'][]
+expected.distances <- file['distances']
+expected.neighbors <- file['neighbors']
+
+
+set.seed(123)                           # be reproducible
+
+#h <- henon(1e5, params = c(-1.4, 0.3, 0.1 * runif(2)))
+#h_test <- henon(1e4, params = c(-1.4, 0.3, 0.1 * runif(2)))
+
+a <- new(AnnoyEuclidean, ncol(train))
+for (i in seq(nrow(train))) {
+  a$addItem(i-1, train[i, ])
+}
+a$build(50)                           	# 50 trees
+
+k <- 10
+
+nn.annoy <- apply(test, 1, function(x) { a$getNNsByVector(x, k) } )
+
+
+s <- create_searcher(train)
+nn.atria <- search_k_neighbors(searcher = s,
+                         k = k,
+                         query_points = test,
+                         epsilon = 0.00)
+release_searcher(s)
+```
+
 
 ## Author
 
