@@ -22,12 +22,83 @@ The package is not (yet) on CRAN. You can also use the development version from 
 devtools::install_github("christianmerkwirth/atriar", ref = "develop")
 ```
 
+The package is tested to build successfully on OS X and on Linux.
+
 Nearest Neighbors Searching
 ---------------------------
 
+Fast nearest neighbor searching usually starts from preprocessing a data set of points into an index structure (e.g. ball tree, random projections) that is then used to accelerate subsequent neighbor queries:
+
+``` r
+# Create a set of points in 4-d.
+D <- 4
+points <- matrix(runif(1e6), ncol=D)
+# Creating the ATRIA nearest neighbor searcher object.
+searcher = create_searcher(points, metric="euclidian")
+```
+
+Function create\_searcher does the preprocessing for a given set of points. The returned searcher object contains preprocessing information that is a mandatory input argument for k-NN and range queries. Preprocessing and querying is divided into separate functions to give the user the possibility to re-use the searcher object when doing multiple searches on the same point set. Note that as soon as the underlying point set is changed or modified, one has to recompute the searcher for the updated set of points.
+
+``` r
+# Deleting the searcher object, freeing the allocated memory.
+release_searcher(searcher)
+```
+
 ### k-Nearest Neighbor Queries
 
+``` r
+# Create a set of points in 4-d.
+D <- 4
+points <- matrix(runif(1e6), ncol=D)
+# Creating the ATRIA nearest neighbor searcher object.
+searcher = create_searcher(points, metric="euclidian")
+
+k.max <- 8
+rand.sample <- sample.int(nrow(points), size = 1000)
+nn <- search_k_neighbors(
+    searcher = searcher,
+    k = k.max,
+    query_points = points[rand.sample, ],
+    exclude = cbind(rand.sample, rand.sample)
+  )
+  
+str(nn)
+```
+
+The output list returned by search\_k\_neighbors contains fields *index* and *dist* which both are matrices with as many rows as there were query points. Indices are 1-based and can be used to index R matrices without rebasing.
+
+In general, reference points query.points can be arbitrarily located, but it is also possible that query.points are taken from the preprocessed points set. To allow the user to avoid self-matches, search\_k\_neighbors accepts the optional input argument *exclude* which is a nrow(query.points) by 2 integer matrix. *exclude* specifies a range of indices (i.e. first, last) that is not eligible as nearest neighbors for the given query point.
+
+### Approximate k-Nearest Neighbor Queries
+
+Approximate nearest neighbors algorithms report neighbors to the query point q with distances possibly greater than the true nearest neighbors distances. The maximal allowed relative error, named epsilon, is given as a parameter to the algorithm. For epsilon =0, the approximate search returns the true (exact) nearest neighbor(s). Computing exact nearest neighbors for data set with intrinsic dimension much higher than 6 seems to be a very time-consuming task. Few algorithms seem to perform significantly better than a brute-force computation of all distances. However, it has been shown that by computing nearest neighbors approximately, it is possible to achieve significantly faster execution times with relatively small actual errors in the reported distances. See (<https://github.com/erikbern/ann-benchmarks>) for a more thorough comparison of k-NN implementations.
+
 ### Range queries
+
+In the task of range searching , we ask for all points of data set P that have distance r or less from the query point q. Sometimes range searching is called a fixed size approach, while k nearest neighbors searching is called a fixed mass approach.
+
+``` r
+# Create a set of points in 4-d.
+D <- 4
+points <- matrix(runif(1e6), ncol=D)
+# Creating the ATRIA nearest neighbor searcher object.
+searcher = create_searcher(points, metric="euclidian")
+
+radius <- 0.2
+rand.sample <- sample.int(nrow(points), size = 1000)
+nn <- search_range(
+  searcher = searcher,
+  radius = radius,
+  query_points = points[rand.sample, ],
+  # Ignore samples with index smaller than the query point
+  # so we avoid counting the same pairwise distance twice.
+  exclude = cbind(rep(-1, 1000), rand.sample)
+)
+  
+str(nn)
+```
+
+The index and distance vectors for a signle query point have the length that is given in count. Both vectors are not sorted by distance.
 
 Boxcounting
 -----------
@@ -55,6 +126,65 @@ microbenchmark(boxcount(X), unique(X), times=10)
 
 Dimension Estimation
 --------------------
+
+Below a typical workflow for estimating the correlation dimension by analying the slope of the correlation sum versus the distance in log scale:
+
+``` r
+# Create a downsampled data set of the terated Henon map.
+data <- henon(2e6, params = c(-1.4, 0.3, 0.1 * runif(2)))
+data <- data[sample.int(n = nrow(data), size = 2e5), ]
+
+# Here we create the ATRIA nearest neighbor searcher object.
+searcher = create_searcher(data, metric="euclidian", cluster_max_points = 64)
+
+# We need to get an idea about typical small and large distances
+# in the data set in order to generate distance bins.
+dist.limits <- distlimits(searcher, data)
+dist.breaks <- logspace(dist.limits[1], dist.limits[2], 32)
+
+# Invoke the correlation sum computation.
+res <- corrsum(searcher=searcher,
+               data=data,
+               dist.breaks = dist.breaks,
+               min.actual.pairs = 2000,
+               min.nr.samples.at.scale = 256,
+               max.nr.samples.at.scale = 1024,
+               batch.size = 128)
+
+# Print and visualize results.
+print(res)
+x <- log2(res$dists)
+y <-log2(res$correlation.sum)
+plot(x, y)
+
+# Fit a linear model to the data in log-log scale. The slope should give
+# us an estimate of the correlation dimension.
+print(lm(y ~ x, data = data.frame(x = x, y = y)[2:18,]))
+
+# Cleanup, delete the searcher object.
+release_searcher(searcher)
+```
+
+We also can use boxcouting to get a rough estimate of the capacity dimension:
+
+``` r
+# Next let's use the boxcounting approach to estimate the capacity dimension.
+res <- boxcounting(data, dist.breaks)
+plot(log(res$dists), res$corrd[, 2])
+x <- log2(res$dists)
+y <- res$boxd[, 2]
+print(lm(y ~ x, data = data.frame(x = x, y = y)[10:24,]))
+```
+
+Author
+------
+
+Christian Merkwirth
+
+License
+-------
+
+GPL (&gt;= 2)
 
 References
 ----------
