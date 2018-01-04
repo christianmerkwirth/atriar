@@ -27,7 +27,7 @@ The package is not (yet) on CRAN. You can also use the development version from 
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("christianmerkwirth/atriar", ref = "develop")
+devtools::install_github("christianmerkwirth/atriar")
 ```
 
 The package is tested to build successfully on OS X and on Linux.
