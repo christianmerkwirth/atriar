@@ -5,20 +5,20 @@
 #include <Rcpp.h>
 
 // This file contains a class collection for nearest neighbor (NN) searching.
-// It is possible to search for k (k=1..N) nearest neighbors to a given query point ("fixed-mass" approach) 
-// or to search all neighbors within a distance r (range) around the query point ("fixes size" approach) 
-// ATRIA : A class that implements an advanced triangle inequality algorithm 
-// During preprocessing, a search tree is constructed by dividing the set of data nearneigh_searcher<POINT_SET>::points 
-// in two (sub)clusters. Each cluster is than subdivided until a minimum number of nearneigh_searcher<POINT_SET>::points is reached 
-// During search, the triangle inequality is used to exclude cluster from further search 
+// It is possible to search for k (k=1..N) nearest neighbors to a given query point ("fixed-mass" approach)
+// or to search all neighbors within a distance r (range) around the query point ("fixes size" approach)
+// ATRIA : A class that implements an advanced triangle inequality algorithm
+// During preprocessing, a search tree is constructed by dividing the set of data nearneigh_searcher<POINT_SET>::points
+// in two (sub)clusters. Each cluster is than subdivided until a minimum number of nearneigh_searcher<POINT_SET>::points is reached
+// During search, the triangle inequality is used to exclude cluster from further search
 // ATRIA might be a good choice for unevenly distributed points in very high dimensional spaces.
-// Here are some parameters that might need some tuning for your special case, but for general purposes these are OK 
-// Parameters for the ATRIA nearest neighbor search 
-// A cluster will not be further subdivided if it contains less 
-// than ATRIAMINPOINTS nearneigh_searcher<POINT_SET>::points 
+// Here are some parameters that might need some tuning for your special case, but for general purposes these are OK
+// Parameters for the ATRIA nearest neighbor search
+// A cluster will not be further subdivided if it contains less
+// than ATRIAMINPOINTS nearneigh_searcher<POINT_SET>::points
 // A smaller value might accelerate actual search but increase pre-processing time.
 // Memory consumption will not change very much when choosing a smaller  value of ATRIAMINPOINTS.
-// Christian Merkwirth, DPI Goettingen, 1998 - 2000 
+// Christian Merkwirth, DPI Goettingen, 1998 - 2000
 
 #define ATRIAMINPOINTS 64
 
@@ -35,7 +35,7 @@ protected:
   long Nused; // Number of points of the data set actually used
 
   SortedNeighborTable table;
-  
+
   // test point number #index of nearneigh_searcher<POINT_SET>::points
   template <class ForwardIterator>
   void test(const long index, ForwardIterator qp, const double thresh) {
@@ -62,7 +62,7 @@ public:
 
   long number_of_points() const { return Nused; }
   const POINT_SET& get_point_set() const { return points; }
-  
+
   // Return the error state, = 0 means OK. An error will only occur when the object
   // was not initialized correctly.
   inline int geterr() const { return err; }
@@ -155,10 +155,11 @@ nearneigh_searcher<POINT_SET>::~nearneigh_searcher() {}
 
 template <class POINT_SET>
 ATRIA<POINT_SET>::ATRIA(POINT_SET &&p, const long excl, const long minpts)
-    : nearneigh_searcher<POINT_SET>(std::move(p), excl), root(nullptr), MINPOINTS(minpts),
+    : nearneigh_searcher<POINT_SET>(std::move(p), excl), MINPOINTS(minpts), root(nullptr),
       permutation_table(new neighbor[nearneigh_searcher<POINT_SET>::Nused]),
-      total_clusters(1), total_points_in_terminal_node(0), terminal_nodes(0),
-      points_searched(0), number_of_queries(0) {
+      total_clusters(1), terminal_nodes(0), total_points_in_terminal_node(0),
+      terminal_cluster_searched(0), points_searched(0), number_of_queries(0) {
+
 #ifdef VERBOSE
   Rcpp::Rcout << "ATRIA Constructor" <<std::endl;
   Rcpp::Rcout << "Size of point set : " << p.size() << "  points of dimension " << p.dimension() <<std::endl;
@@ -228,7 +229,7 @@ pair<long, long> ATRIA<POINT_SET>::find_child_cluster_centers(
   }
 
   // Compute right center, the point that is farthest away from the c->center.
-  // We assume that distances in Section are with respect to the c->center.  
+  // We assume that distances in Section are with respect to the c->center.
   long index = 0;
   long center_right = Section[index].index();
   double dist = Section[index].dist();
@@ -279,8 +280,6 @@ long ATRIA<POINT_SET>::assign_points_to_centers(
     neighbor *const Section, const long c_length,
     pair<cluster *, cluster *> childs) {
   const long center_left = childs.first->center;
-  const long center_right = childs.second->center;
-
   long i = 0;
   long j = c_length - 1;
 
@@ -304,18 +303,13 @@ long ATRIA<POINT_SET>::assign_points_to_centers(
 
       if (dl > dr) {
         // point belongs to the right corner
-        const double diff = dl - dr;
-
         Section[i].dist() = dr;
         i_belongs_to_left = 0;
 
         Rmax_right = max(Rmax_right, dr);
         break;
       }
-
       // point belongs to the left corner
-      const double diff = dr - dl;
-
       Section[i].dist() = dl;
       Rmax_left = max(Rmax_left, dl);
     }
@@ -333,20 +327,14 @@ long ATRIA<POINT_SET>::assign_points_to_centers(
 
       if (dr >= dl) {
         // point belongs to the left corner
-        const double diff = dr - dl;
-
         Section[j].dist() = dl;
         j_belongs_to_right = 0;
 
         Rmax_left = max(Rmax_left, dl);
         break;
       }
-
       // point belongs to the right corner
-      const double diff = dl - dr;
-
       Section[j].dist() = dr;
-
       Rmax_right = max(Rmax_right, dr);
     }
 
