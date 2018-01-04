@@ -40,7 +40,7 @@ D <- 10
 X <- floor(10 * matrix(runif(1e6), ncol=D))
 mode(X) <- "integer"
 
-# Let's just count non-empty bins in in D-dimensional space.
+# Let's just count non-empty bins in a D-dimensional space.
 y.unique <- unique(X);
 bc <- boxcount(X)
 

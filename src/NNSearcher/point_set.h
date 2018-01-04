@@ -33,8 +33,8 @@ public:
 // a class having an operator(). For possible implementations of a METRIC, see
 // file "metric.h" in this directory.
 template <class METRIC>
-class rm_point_set : public point_set_base<METRIC> { 
-  
+class rm_point_set : public point_set_base<METRIC> {
+
 protected:
   const long D; // dimension
   float* matrix_ptr; // points are stored row-major in a C style array
@@ -72,28 +72,24 @@ public:
     delete[] matrix_ptr;
   };
   inline long dimension() const { return D; };
-  
+
   typedef const float* row_iterator; // pointer that iterates over the elements
   // of one point in the rm_point_set (points are row vectors)
-  
+
   row_iterator point_begin(const long n) const { return matrix_ptr + n*D; }
   row_iterator point_end(const long n) const {
     return matrix_ptr + (n + 1) * D; // past-the-end
   }
-  
+
   template <class ForwardIterator>
   inline double distance(const long index1, ForwardIterator vec2) const {
     return Distance(point_begin(index1), point_end(index1), vec2);
   }
-  
-#ifdef PARTIAL_SEARCH
   template <class ForwardIterator>
   inline double distance(const long index1, ForwardIterator vec2,
                          const double thresh) const {
     return Distance(point_begin(index1), point_end(index1), vec2, thresh);
   }
-#endif
-  
   inline double distance(const long index1, const long index2) const {
     return Distance(point_begin(index1), point_end(index1),
                     point_begin(index2));

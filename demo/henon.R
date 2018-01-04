@@ -3,7 +3,7 @@ data <- henon(2e6, params = c(-1.4, 0.3, 0.1 * runif(2)))
 data <- data[sample.int(n = nrow(data), size = 2e5), ]
 
 # Here we create the ATRIA nearest neighbor searcher object.
-searcher = create_searcher(data, metric="manhattan", cluster_max_points = 64)
+searcher = create_searcher(data, metric="euclidian", cluster_max_points = 64)
 
 # We need to get an idea about typical small and large distances
 # in the data set in order to generate distance bins.

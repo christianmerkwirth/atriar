@@ -21,12 +21,13 @@
 // exceeded, DBL_MAX is returned to prevent the search functions to consider
 // this value as valid distance.
 
+
 class euclidian_distance {
 public:
   euclidian_distance(){};
   template <class ForwardIterator1, class ForwardIterator2>
   double operator()(ForwardIterator1 first1, ForwardIterator1 last1,
-                    ForwardIterator2 first2) const {
+                  ForwardIterator2 first2) const {
     const double y = (*first1 - *first2);
     double dist = y * y;
     for (++first1, ++first2; first1 != last1; ++first1, ++first2) {
@@ -40,7 +41,7 @@ public:
   // of distance
   template <class ForwardIterator1, class ForwardIterator2>
   double operator()(ForwardIterator1 first1, ForwardIterator1 last1,
-                    ForwardIterator2 first2, const double thresh) const {
+                  ForwardIterator2 first2, const double thresh) const {
     const double t = thresh * thresh;
     const double y = (*first1 - *first2);
     double dist = y * y;
@@ -153,6 +154,66 @@ public:
       }
     }
     return dist;
+  }
+};
+
+class euclidian_distance_unrolled {
+public:
+  euclidian_distance_unrolled(){};
+  template <class ForwardIterator1, class ForwardIterator2>
+  double operator()(ForwardIterator1 first1, const ForwardIterator1 last1,
+                  ForwardIterator2 first2) const {
+    double dist = 0, diff = 0;
+
+    size_t n4 = (last1-first1)/4;
+    const ForwardIterator1 partial1 = first1 + n4 * 4;
+
+    while (first1 != partial1) {
+      diff = *first1 - *first2; dist += diff * diff;
+      ++first1; ++first2;
+      diff = *first1 - *first2; dist += diff * diff;
+      ++first1; ++first2;
+      diff = *first1 - *first2; dist += diff * diff;
+      ++first1; ++first2;
+      diff = *first1 - *first2; dist += diff * diff;
+      ++first1; ++first2;
+    }
+
+    for (; first1 != last1; ++first1, ++first2) {
+      diff = (*first1 - *first2);
+      dist += diff * diff;
+    }
+    return sqrt(dist);
+  }
+
+  // Supports partial search : if partial distance exceeds thresh, stop computing
+  // of distance
+  template <class ForwardIterator1, class ForwardIterator2>
+  double operator()(ForwardIterator1 first1, const ForwardIterator1 last1,
+                  ForwardIterator2 first2, const double thresh) const {
+    const double t = thresh * thresh;
+    double dist = 0, diff = 0;
+
+    size_t n4 = (last1-first1)/4;
+    const ForwardIterator1 partial1 = first1 + n4 * 4;
+
+    while (first1 != partial1) {
+      diff = *first1 - *first2; dist += diff * diff;
+      ++first1; ++first2;
+      diff = *first1 - *first2; dist += diff * diff;
+      ++first1; ++first2;
+      diff = *first1 - *first2; dist += diff * diff;
+      ++first1; ++first2;
+      diff = *first1 - *first2; dist += diff * diff;
+      ++first1; ++first2;
+      if (dist > t)
+        return DBL_MAX;
+    }
+    for (; first1 != last1; ++first1, ++first2) {
+      diff = (*first1 - *first2);
+      dist += diff * diff;
+    }
+    return sqrt(dist);
   }
 };
 
