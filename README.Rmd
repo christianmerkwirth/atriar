@@ -95,7 +95,7 @@ Approximate nearest neighbors algorithms report neighbors to the query point q w
 ```{r}
 # Create a set of points in 12-d.
 D <- 12
-points <- matrix(runif(1e6), ncol=D)
+points <- matrix(runif(1.2e6), ncol=D)
 # Creating the ATRIA nearest neighbor searcher object.
 searcher = create_searcher(points, metric="euclidian")
 
