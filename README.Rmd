@@ -56,7 +56,9 @@ release_searcher(searcher)
 
 ### k-Nearest Neighbor Queries
 
-``` r
+```{r}
+library(atriar)
+
 # Create a set of points in 4-d.
 D <- 4
 points <- matrix(runif(1e6), ncol=D)
@@ -90,7 +92,7 @@ are taken from the preprocessed points set. To allow the user to avoid self-matc
 Approximate nearest neighbors algorithms report neighbors to the query point q with distances possibly greater than the true nearest neighbors distances. The maximal allowed relative error, named *epsilon*, is given as a parameter to the algorithm. For epsilon =0, the approximate search returns the true (exact) nearest neighbor(s). Computing exact nearest neighbors for data set with intrinsic dimension much higher than 6 seems to be a very time-consuming task. Few algorithms seem to perform significantly better than a brute-force computation of all distances. However, it has been shown that by computing nearest neighbors approximately, it is possible to achieve significantly faster execution times with relatively small actual errors in the reported distances. See (https://github.com/erikbern/ann-benchmarks) for a more thorough comparison of k-NN implementations.
 
 
-``` r
+```{r}
 # Create a set of points in 12-d.
 D <- 12
 points <- matrix(runif(1e6), ncol=D)
@@ -116,7 +118,7 @@ release_searcher(searcher)
 In the task of range searching , we ask for all points of data set P that have distance r or less from the query point q. Sometimes range searching is called a fixed size approach, while k nearest neighbors searching is called a fixed mass approach.
 
 
-``` r
+```{r}
 # Create a set of points in 4-d.
 D <- 4
 points <- matrix(runif(1e6), ncol=D)
@@ -124,14 +126,14 @@ points <- matrix(runif(1e6), ncol=D)
 searcher = create_searcher(points, metric="euclidian")
 
 radius <- 0.2
-rand.sample <- sample.int(nrow(points), size = 1000)
+rand.sample <- sample.int(nrow(points), size = 4)
 nn <- search_range(
   searcher = searcher,
   radius = radius,
   query_points = points[rand.sample, ],
   # Ignore samples with index smaller than the query point
   # so we avoid counting the same pairwise distance twice.
-  exclude = cbind(rep(-1, 1000), rand.sample)
+  exclude = cbind(rep(-1, 4), rand.sample)
 )
   
 str(nn)
@@ -153,7 +155,7 @@ is constructed from the two leftmost rows of the input matrix X. The
 algorithm returns the boxcounting, information and correlation
 measures for all prefix-subspaces 1, ..., D.
 
-``` r
+```{r}
 # Create a million data points in 10-d.
 D <- 10
 X <- floor(10 * matrix(runif(1e6), ncol=D))
@@ -177,7 +179,7 @@ microbenchmark(boxcount(X), unique(X), times=10)
 Below a typical workflow for estimating the correlation dimension by analying the slope of the
 correlation sum versus the distance in log scale:
 
-``` r
+```{r}
 # Create a downsampled data set of the terated Henon map.
 data <- henon(2e6, params = c(-1.4, 0.3, 0.1 * runif(2)))
 data <- data[sample.int(n = nrow(data), size = 2e5), ]
@@ -215,12 +217,15 @@ release_searcher(searcher)
 
 We also can use boxcouting to get a rough estimate of the capacity dimension:
 
-``` r
+```{r}
 # Next let's use the boxcounting approach to estimate the capacity dimension.
 res <- boxcounting(data, dist.breaks)
-plot(log(res$dists), res$corrd[, 2])
+
 x <- log2(res$dists)
 y <- res$boxd[, 2]
+
+plot(x, y)
+
 print(lm(y ~ x, data = data.frame(x = x, y = y)[10:24,]))
 ```
 
