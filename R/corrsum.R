@@ -40,7 +40,8 @@ corrsum <-
            min.actual.pairs = 2000,
            min.nr.samples.at.scale = 128,
            max.nr.samples.at.scale = 1024,
-           batch.size = 32) {
+           batch.size = 32,
+           verbose = FALSE) {
     N <- nrow(data)
     dists <- c(0, dist.breaks)
     actual.pairs.count <- numeric(length(dists))
@@ -83,16 +84,17 @@ corrsum <-
         actual.pairs.count <-
           actual.pairs.count + rowSums(new.pair.counts)
         samples.used[pos] <- samples.used[pos] + length(nn$count)
-
-        cat(paste0(
-          'Radius: ',
-          radius,
-          ' count: ',
-          sum(nn$count),
-          ' ',
-          sum(rowSums(new.pair.counts)),
-          '\n'
-        ))
+        if (verbose) {
+          cat(paste0(
+            'Radius: ',
+            radius,
+            ' count: ',
+            sum(nn$count),
+            ' ',
+            sum(rowSums(new.pair.counts)),
+            '\n'
+          ))
+        }
       }
     }
     return(

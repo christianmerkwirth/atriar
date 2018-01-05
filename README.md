@@ -61,12 +61,12 @@ searcher = create_searcher(points, metric="euclidian")
     ## Size of point set : 250000  points of dimension 4
     ## Number of points used : 250000
     ## MINPOINTS : 64
-    ## Root center : 225456
+    ## Root center : 42592
     ## Root starting index  : 1
     ## Root length : 249999
-    ## Root Rmax : 1.42061
+    ## Root Rmax : 1.51764
     ## Created tree structure for ATRIA searcher
-    ## Approx. dataset radius: 1.42061
+    ## Approx. dataset radius: 1.51764
 
 ``` r
 k.max <- 8
@@ -91,11 +91,11 @@ release_searcher(searcher)
 ```
 
     ## ATRIA Destructor
-    ## Total_clusters : 11525
-    ## Total number of points in terminal nodes : 238475
-    ## Average number of points in a terminal node : 41.3804
-    ## Average percentage of points searched 0.450853% (1128)
-    ## Average number of terminal nodes visited : 34.476
+    ## Total_clusters : 11559
+    ## Total number of points in terminal nodes : 238441
+    ## Average number of points in a terminal node : 41.2528
+    ## Average percentage of points searched 0.437813% (1095)
+    ## Average number of terminal nodes visited : 33.782
 
     ## [1] TRUE
 
@@ -120,12 +120,12 @@ searcher = create_searcher(points, metric="euclidian")
     ## Size of point set : 100000  points of dimension 12
     ## Number of points used : 100000
     ## MINPOINTS : 64
-    ## Root center : 90182
+    ## Root center : 17036
     ## Root starting index  : 1
     ## Root length : 99999
-    ## Root Rmax : 2.41914
+    ## Root Rmax : 2.21967
     ## Created tree structure for ATRIA searcher
-    ## Approx. dataset radius: 2.41914
+    ## Approx. dataset radius: 2.21967
 
 ``` r
 k.max <- 8
@@ -142,9 +142,9 @@ microbenchmark(
     ##                                                                     expr
     ##               search_k_neighbors(searcher, k.max, points[rand.sample, ])
     ##  search_k_neighbors(searcher, k.max, points[rand.sample, ], epsilon = 3)
-    ##      min      lq    mean  median      uq     max neval
-    ##  2436.74 2462.73 2654.82 2647.05 2838.12 2877.19    10
-    ##   765.15  794.46  861.38  843.04  932.31  998.44    10
+    ##      min      lq   mean median     uq    max neval
+    ##  2626.37 2875.22 3078.6 3043.1 3266.5 3514.1    10
+    ##   809.47  930.09 1017.9 1044.2 1116.8 1182.8    10
 
 ``` r
 # Cleanup, delete the searcher object.
@@ -152,11 +152,11 @@ release_searcher(searcher)
 ```
 
     ## ATRIA Destructor
-    ## Total_clusters : 4621
-    ## Total number of points in terminal nodes : 95379
-    ## Average number of points in a terminal node : 41.2717
-    ## Average percentage of points searched 29.7287% (29729)
-    ## Average number of terminal nodes visited : 1094.05
+    ## Total_clusters : 4581
+    ## Total number of points in terminal nodes : 95419
+    ## Average number of points in a terminal node : 41.6495
+    ## Average percentage of points searched 29.64% (29641)
+    ## Average number of terminal nodes visited : 1088.23
 
     ## [1] TRUE
 
@@ -177,12 +177,12 @@ searcher = create_searcher(points, metric="euclidian")
     ## Size of point set : 250000  points of dimension 4
     ## Number of points used : 250000
     ## MINPOINTS : 64
-    ## Root center : 225456
+    ## Root center : 42592
     ## Root starting index  : 1
     ## Root length : 249999
-    ## Root Rmax : 1.55817
+    ## Root Rmax : 1.58156
     ## Created tree structure for ATRIA searcher
-    ## Approx. dataset radius: 1.55817
+    ## Approx. dataset radius: 1.58156
 
 ``` r
 radius <- 0.2
@@ -203,17 +203,17 @@ str(nn)
     ##  $ count: int [1:4] 134 437 387 347
     ##  $ nn   :List of 4
     ##   ..$ :List of 2
-    ##   .. ..$ index: int [1:134] 246238 216256 248483 234627 219872 229285 218477 244352 236866 224344 ...
-    ##   .. ..$ dist : num [1:134] 0.153 0.195 0.176 0.177 0.185 ...
+    ##   .. ..$ index: int [1:134] 236898 232130 238932 246095 230962 242479 232658 225686 225644 242697 ...
+    ##   .. ..$ dist : num [1:134] 0.188 0.198 0.173 0.167 0.173 ...
     ##   ..$ :List of 2
-    ##   .. ..$ index: int [1:437] 174758 204386 241599 187591 225519 217277 190927 238624 199007 180129 ...
-    ##   .. ..$ dist : num [1:437] 0.195 0.187 0.191 0.174 0.192 ...
+    ##   .. ..$ index: int [1:437] 214341 207721 227004 249868 200325 236372 237558 190688 210730 187877 ...
+    ##   .. ..$ dist : num [1:437] 0.199 0.182 0.128 0.199 0.159 ...
     ##   ..$ :List of 2
-    ##   .. ..$ index: int [1:387] 214360 248399 224359 238198 190489 232745 222767 194987 241266 248788 ...
-    ##   .. ..$ dist : num [1:387] 0.2 0.174 0.186 0.188 0.129 ...
+    ##   .. ..$ index: int [1:387] 199201 221313 226957 209138 239375 191391 222383 225560 233876 194497 ...
+    ##   .. ..$ dist : num [1:387] 0.125 0.192 0.18 0.156 0.191 ...
     ##   ..$ :List of 2
-    ##   .. ..$ index: int [1:347] 234010 197806 247813 235748 238329 168972 230901 243314 181386 237490 ...
-    ##   .. ..$ dist : num [1:347] 0.195 0.178 0.18 0.133 0.197 ...
+    ##   .. ..$ index: int [1:347] 209526 227165 167905 169054 197353 193238 190632 200059 220091 199520 ...
+    ##   .. ..$ dist : num [1:347] 0.1488 0.148 0.1764 0.0697 0.1875 ...
 
 ``` r
 # Cleanup, delete the searcher object.
@@ -221,11 +221,11 @@ release_searcher(searcher)
 ```
 
     ## ATRIA Destructor
-    ## Total_clusters : 11419
-    ## Total number of points in terminal nodes : 238581
-    ## Average number of points in a terminal node : 41.783
-    ## Average percentage of points searched 1.0276% (2569)
-    ## Average number of terminal nodes visited : 182.75
+    ## Total_clusters : 11505
+    ## Total number of points in terminal nodes : 238495
+    ## Average number of points in a terminal node : 41.4558
+    ## Average percentage of points searched 0.989% (2473)
+    ## Average number of terminal nodes visited : 189.25
 
     ## [1] TRUE
 
@@ -260,9 +260,9 @@ microbenchmark(boxcount(X), unique(X), times=10)
 ```
 
     ## Unit: milliseconds
-    ##         expr     min      lq    mean  median      uq     max neval
-    ##  boxcount(X)  49.247  50.137  53.128  52.119  54.817  63.194    10
-    ##    unique(X) 625.448 650.318 686.600 692.005 715.510 731.478    10
+    ##         expr     min      lq    mean  median     uq     max neval
+    ##  boxcount(X)  46.969  49.967  51.635  52.702  53.30  54.353    10
+    ##    unique(X) 603.647 640.841 675.917 697.356 700.08 745.980    10
 
 Dimension Estimation
 --------------------
@@ -283,12 +283,12 @@ searcher = create_searcher(data, metric="euclidian", cluster_max_points = 64)
     ## Size of point set : 200000  points of dimension 2
     ## Number of points used : 200000
     ## MINPOINTS : 64
-    ## Root center : 180365
+    ## Root center : 34073
     ## Root starting index  : 1
     ## Root length : 199999
-    ## Root Rmax : 2.42148
+    ## Root Rmax : 2.38161
     ## Created tree structure for ATRIA searcher
-    ## Approx. dataset radius: 2.42148
+    ## Approx. dataset radius: 2.38161
 
 ``` r
 # We need to get an idea about typical small and large distances
@@ -304,110 +304,7 @@ res <- corrsum(searcher=searcher,
                min.nr.samples.at.scale = 256,
                max.nr.samples.at.scale = 1024,
                batch.size = 128)
-```
 
-    ## Radius: 0.314931972790387 count: 1510621 1510621
-    ## Radius: 0.314931972790387 count: 1462080 1462080
-    ## Radius: 0.232986575336103 count: 974839 974839
-    ## Radius: 0.232986575336103 count: 986444 986444
-    ## Radius: 0.17236339583398 count: 684433 684433
-    ## Radius: 0.17236339583398 count: 640766 640766
-    ## Radius: 0.127514386528765 count: 496449 496449
-    ## Radius: 0.127514386528765 count: 483787 483787
-    ## Radius: 0.0943351034199216 count: 384216 384216
-    ## Radius: 0.0943351034199216 count: 353934 353934
-    ## Radius: 0.0697890801148137 count: 248403 248403
-    ## Radius: 0.0697890801148137 count: 240859 240859
-    ## Radius: 0.0516299397223466 count: 154595 154595
-    ## Radius: 0.0516299397223466 count: 163665 163665
-    ## Radius: 0.0381958133184695 count: 122610 122610
-    ## Radius: 0.0381958133184695 count: 105386 105386
-    ## Radius: 0.0282572507910158 count: 72055 72055
-    ## Radius: 0.0282572507910158 count: 94060 94060
-    ## Radius: 0.0209047053301065 count: 50299 50299
-    ## Radius: 0.0209047053301065 count: 51291 51291
-    ## Radius: 0.0154652944892122 count: 36518 36518
-    ## Radius: 0.0154652944892122 count: 34515 34515
-    ## Radius: 0.0114412200440635 count: 23590 23590
-    ## Radius: 0.0114412200440635 count: 28505 28505
-    ## Radius: 0.00846421102346235 count: 16722 16722
-    ## Radius: 0.00846421102346235 count: 17030 17030
-    ## Radius: 0.00626182067767106 count: 15821 15821
-    ## Radius: 0.00626182067767106 count: 14478 14478
-    ## Radius: 0.00463249298612944 count: 11005 11005
-    ## Radius: 0.00463249298612944 count: 11095 11095
-    ## Radius: 0.00342711686763282 count: 6440 6440
-    ## Radius: 0.00342711686763282 count: 5877 5877
-    ## Radius: 0.00253537999076966 count: 3885 3885
-    ## Radius: 0.00253537999076966 count: 4115 4115
-    ## Radius: 0.00187567332713554 count: 2982 2982
-    ## Radius: 0.00187567332713554 count: 3542 3542
-    ## Radius: 0.00138762254294659 count: 2380 2380
-    ## Radius: 0.00138762254294659 count: 2166 2166
-    ## Radius: 0.00102656272488243 count: 1433 1433
-    ## Radius: 0.00102656272488243 count: 1596 1596
-    ## Radius: 0.000759450783986442 count: 907 907
-    ## Radius: 0.000759450783986442 count: 1283 1283
-    ## Radius: 0.000561841453344875 count: 763 763
-    ## Radius: 0.000561841453344875 count: 718 718
-    ## Radius: 0.000415650132112204 count: 426 426
-    ## Radius: 0.000415650132112204 count: 400 400
-    ## Radius: 0.00030749783821815 count: 325 325
-    ## Radius: 0.00030749783821815 count: 321 321
-    ## Radius: 0.000227486804896072 count: 182 182
-    ## Radius: 0.000227486804896072 count: 251 251
-    ## Radius: 0.000168294667376198 count: 162 162
-    ## Radius: 0.000168294667376198 count: 169 169
-    ## Radius: 0.000124504342483533 count: 98 98
-    ## Radius: 0.000124504342483533 count: 132 132
-    ## Radius: 0.000124504342483533 count: 131 131
-    ## Radius: 0.000124504342483533 count: 126 126
-    ## Radius: 0.000124504342483533 count: 71 71
-    ## Radius: 0.000124504342483533 count: 93 93
-    ## Radius: 0.000124504342483533 count: 130 130
-    ## Radius: 0.000124504342483533 count: 132 132
-    ## Radius: 9.21082737732018e-05 count: 90 90
-    ## Radius: 9.21082737732018e-05 count: 69 69
-    ## Radius: 9.21082737732018e-05 count: 61 61
-    ## Radius: 9.21082737732018e-05 count: 67 67
-    ## Radius: 9.21082737732018e-05 count: 68 68
-    ## Radius: 9.21082737732018e-05 count: 85 85
-    ## Radius: 9.21082737732018e-05 count: 65 65
-    ## Radius: 9.21082737732018e-05 count: 68 68
-    ## Radius: 6.81416722360605e-05 count: 49 49
-    ## Radius: 6.81416722360605e-05 count: 41 41
-    ## Radius: 6.81416722360605e-05 count: 41 41
-    ## Radius: 6.81416722360605e-05 count: 78 78
-    ## Radius: 6.81416722360605e-05 count: 48 48
-    ## Radius: 6.81416722360605e-05 count: 67 67
-    ## Radius: 6.81416722360605e-05 count: 66 66
-    ## Radius: 6.81416722360605e-05 count: 52 52
-    ## Radius: 5.04111878869847e-05 count: 30 30
-    ## Radius: 5.04111878869847e-05 count: 40 40
-    ## Radius: 5.04111878869847e-05 count: 35 35
-    ## Radius: 5.04111878869847e-05 count: 33 33
-    ## Radius: 5.04111878869847e-05 count: 32 32
-    ## Radius: 5.04111878869847e-05 count: 37 37
-    ## Radius: 5.04111878869847e-05 count: 57 57
-    ## Radius: 5.04111878869847e-05 count: 25 25
-    ## Radius: 3.72941810904374e-05 count: 34 34
-    ## Radius: 3.72941810904374e-05 count: 27 27
-    ## Radius: 3.72941810904374e-05 count: 11 11
-    ## Radius: 3.72941810904374e-05 count: 17 17
-    ## Radius: 3.72941810904374e-05 count: 22 22
-    ## Radius: 3.72941810904374e-05 count: 28 28
-    ## Radius: 3.72941810904374e-05 count: 30 30
-    ## Radius: 3.72941810904374e-05 count: 22 22
-    ## Radius: 2.75902235496703e-05 count: 13 13
-    ## Radius: 2.75902235496703e-05 count: 16 16
-    ## Radius: 2.75902235496703e-05 count: 17 17
-    ## Radius: 2.75902235496703e-05 count: 9 9
-    ## Radius: 2.75902235496703e-05 count: 16 16
-    ## Radius: 2.75902235496703e-05 count: 16 16
-    ## Radius: 2.75902235496703e-05 count: 16 16
-    ## Radius: 2.75902235496703e-05 count: 19 19
-
-``` r
 # Print and visualize results.
 print(res)
 ```
@@ -479,7 +376,7 @@ release_searcher(searcher)
     ## Total_clusters : 9245
     ## Total number of points in terminal nodes : 190755
     ## Average number of points in a terminal node : 41.2622
-    ## Average percentage of points searched 0.466632% (934)
+    ## Average percentage of points searched 0.466638% (934)
     ## Average number of terminal nodes visited : 38.019
 
     ## [1] TRUE
