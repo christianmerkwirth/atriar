@@ -10,8 +10,9 @@ using namespace Rcpp;
 XPtr<Searcher> create_searcher(NumericMatrix x,
                                const string metric = "euclidian",
                                const long exclude_samples = 0,
-                               const long cluster_max_points = 64) {
-  Searcher *s = new Searcher(x, metric, exclude_samples, cluster_max_points);
+                               const long cluster_max_points = 64,
+                               const uint32 seed=9345356234) {
+  Searcher *s = new Searcher(x, metric, exclude_samples, cluster_max_points, seed);
   XPtr<Searcher> searcher(s);
   Rcout << "Approx. dataset radius: " << s->data_set_radius() << std::endl;
   return searcher;

@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // create_searcher
-XPtr<Searcher> create_searcher(NumericMatrix x, const string metric, const long exclude_samples, const long cluster_max_points);
-RcppExport SEXP _atriar_create_searcher(SEXP xSEXP, SEXP metricSEXP, SEXP exclude_samplesSEXP, SEXP cluster_max_pointsSEXP) {
+XPtr<Searcher> create_searcher(NumericMatrix x, const string metric, const long exclude_samples, const long cluster_max_points, const uint32 seed);
+RcppExport SEXP _atriar_create_searcher(SEXP xSEXP, SEXP metricSEXP, SEXP exclude_samplesSEXP, SEXP cluster_max_pointsSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -16,7 +16,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const string >::type metric(metricSEXP);
     Rcpp::traits::input_parameter< const long >::type exclude_samples(exclude_samplesSEXP);
     Rcpp::traits::input_parameter< const long >::type cluster_max_points(cluster_max_pointsSEXP);
-    rcpp_result_gen = Rcpp::wrap(create_searcher(x, metric, exclude_samples, cluster_max_points));
+    Rcpp::traits::input_parameter< const uint32 >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(create_searcher(x, metric, exclude_samples, cluster_max_points, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -121,7 +122,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_atriar_create_searcher", (DL_FUNC) &_atriar_create_searcher, 4},
+    {"_atriar_create_searcher", (DL_FUNC) &_atriar_create_searcher, 5},
     {"_atriar_release_searcher", (DL_FUNC) &_atriar_release_searcher, 1},
     {"_atriar_number_of_points", (DL_FUNC) &_atriar_number_of_points, 1},
     {"_atriar_data_set_radius", (DL_FUNC) &_atriar_data_set_radius, 1},

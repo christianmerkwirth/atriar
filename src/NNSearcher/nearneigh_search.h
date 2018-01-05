@@ -8,14 +8,14 @@
 // It is possible to search for k (k=1..N) nearest neighbors to a given query point ("fixed-mass" approach)
 // or to search all neighbors within a distance r (range) around the query point ("fixes size" approach)
 // ATRIA : A class that implements an advanced triangle inequality algorithm
-// During preprocessing, a search tree is constructed by dividing the set of data nearneigh_searcher<POINT_SET>::points
-// in two (sub)clusters. Each cluster is than subdivided until a minimum number of nearneigh_searcher<POINT_SET>::points is reached
+// During preprocessing, a search tree is constructed by dividing the set of data points
+// in two (sub)clusters. Each cluster is than subdivided until a minimum number of points is reached
 // During search, the triangle inequality is used to exclude cluster from further search
 // ATRIA might be a good choice for unevenly distributed points in very high dimensional spaces.
 // Here are some parameters that might need some tuning for your special case, but for general purposes these are OK
 // Parameters for the ATRIA nearest neighbor search
 // A cluster will not be further subdivided if it contains less
-// than ATRIAMINPOINTS nearneigh_searcher<POINT_SET>::points
+// than ATRIAMINPOINTS points
 // A smaller value might accelerate actual search but increase pre-processing time.
 // Memory consumption will not change very much when choosing a smaller  value of ATRIAMINPOINTS.
 // Christian Merkwirth, DPI Goettingen, 1998 - 2000
@@ -33,24 +33,6 @@ protected:
   const POINT_SET points;
 
   long Nused; // Number of points of the data set actually used
-
-  SortedNeighborTable table;
-
-  // test point number #index of nearneigh_searcher<POINT_SET>::points
-  template <class ForwardIterator>
-  void test(const long index, ForwardIterator qp, const double thresh) {
-#ifdef PARTIAL_SEARCH
-    const double d = points.distance(index, qp, thresh);
-#else
-    const double d = points.distance(index, qp);
-#endif
-    if (d < thresh)
-      table.insert(neighbor(index, d));
-#ifdef PROFILE
-    points_searched++;
-#endif
-  }
-
 public:
   typedef POINT_SET point_set;
 
@@ -81,6 +63,7 @@ protected:
   priority_queue<SearchItem, vector<SearchItem>, searchitemCompare>
       search_queue;
   stack<SearchItem, vector<SearchItem> > SearchStack; // used for range searches/counts
+  SortedNeighborTable table;
 
   long total_clusters;
   long terminal_nodes;
@@ -102,8 +85,20 @@ protected:
   void search(ForwardIterator query_point, const long first, const long last,
               const double epsilon);
 
+  // Test point number #index of points.
+  template <class ForwardIterator>
+  void test(const long index, ForwardIterator qp, const double thresh) {
+#ifdef PARTIAL_SEARCH
+    const double d = nearneigh_searcher<POINT_SET>::points.distance(index, qp, thresh);
+#else
+    const double d = nearneigh_searcher<POINT_SET>::points.distance(index, qp);
+#endif
+    if (d < thresh)
+      table.insert(neighbor(index, d));
+    points_searched++;
+  }
 public:
-  ATRIA(POINT_SET &&p, const long excl = 0, const long minpts = ATRIAMINPOINTS);
+  ATRIA(POINT_SET &&p, const long excl = 0, const long minpts = ATRIAMINPOINTS, const uint32 seed=615460891);
   ~ATRIA();
 
   // Search for k nearest neighbors of the point query_point, excluding
@@ -134,7 +129,8 @@ public:
   inline double data_set_radius() const { return root->Rmax; };
   inline long total_tree_nodes() const { return total_clusters; };
   double search_efficiency() const {
-    return ((double)points_searched) / ((double)nearneigh_searcher<POINT_SET>::number_of_points() * number_of_queries);
+    return (((double)points_searched) /
+      ((double)nearneigh_searcher<POINT_SET>::number_of_points() * number_of_queries));
   }
 };
 
@@ -154,12 +150,13 @@ template <class POINT_SET>
 nearneigh_searcher<POINT_SET>::~nearneigh_searcher() {}
 
 template <class POINT_SET>
-ATRIA<POINT_SET>::ATRIA(POINT_SET &&p, const long excl, const long minpts)
+ATRIA<POINT_SET>::ATRIA(POINT_SET &&p, const long excl, const long minpts, const uint32 seed)
     : nearneigh_searcher<POINT_SET>(std::move(p), excl), MINPOINTS(minpts), root(nullptr),
       permutation_table(new neighbor[nearneigh_searcher<POINT_SET>::Nused]),
       total_clusters(1), terminal_nodes(0), total_points_in_terminal_node(0),
       terminal_cluster_searched(0), points_searched(0), number_of_queries(0) {
 
+  RNG::Seed(seed);
 #ifdef VERBOSE
   Rcpp::Rcout << "ATRIA Constructor" <<std::endl;
   Rcpp::Rcout << "Size of point set : " << p.size() << "  points of dimension " << p.dimension() <<std::endl;
@@ -397,8 +394,8 @@ template <class POINT_SET> void ATRIA<POINT_SET>::create_tree() {
   Rcpp::Rcout << "Root Rmax : " << root->Rmax <<std::endl;
 #endif
 
-  // now create the tree
-  Stack.push(root); // push root cluster on Stack
+  // Now create the tree. Start by pushing the root cluster onto the stack.
+  Stack.push(root);
 
   while (!Stack.empty()) {
     cluster* const c = Stack.top();
@@ -454,13 +451,8 @@ template <class POINT_SET> void ATRIA<POINT_SET>::create_tree() {
 }
 
 template <class POINT_SET> void ATRIA<POINT_SET>::destroy_tree() {
-  stack<cluster_pointer, cluster_pointer_vector>
-      Stack; // used for tree construction
-
-  if (!root->is_terminal()) {
-    Stack.push(root->left);
-    Stack.push(root->right);
-  }
+  stack<cluster_pointer, cluster_pointer_vector> Stack;
+  Stack.push(root);
 
   while (!Stack.empty()) {
     cluster *c = Stack.top();
@@ -483,13 +475,13 @@ long ATRIA<POINT_SET>::search_k_neighbors(vector<neighbor> &v, const long k,
                                           const long first, const long last,
                                           const double epsilon) {
   number_of_queries++;
-  nearneigh_searcher<POINT_SET>::table.init_search(k);
+  table.init_search(k);
 
   search(query_point, first, last, epsilon);
 
-  return nearneigh_searcher<POINT_SET>::table.finish_search(
-      v); // append nearneigh_searcher<POINT_SET>::table items to v, v should be
-          // empty, afterwards nearneigh_searcher<POINT_SET>::table is empty
+  // Append nearneigh_searcher<POINT_SET>::table items to v. Initially v
+  // should be empty, afterwards nearneigh_searcher<POINT_SET>::table is empty.
+  return table.finish_search(v);
 }
 
 template <class POINT_SET>
@@ -500,10 +492,11 @@ void ATRIA<POINT_SET>::search(ForwardIterator query_point, const long first,
   const double root_dist =
       nearneigh_searcher<POINT_SET>::points.distance(root->center, query_point);
 
+  // Clear search queue.
   while (!search_queue.empty())
-    search_queue.pop(); // clear search queue
+    search_queue.pop();
 
-  // push root cluster as search item into the PR-QUEUE
+  // Push root cluster as search item into the PR-QUEUE
   search_queue.push(SearchItem(root, root_dist));
 
   while (!search_queue.empty()) {
@@ -511,42 +504,39 @@ void ATRIA<POINT_SET>::search(ForwardIterator query_point, const long first,
     search_queue.pop();
     const cluster *const c = si.clusterp();
 
-    if ((nearneigh_searcher<POINT_SET>::table.highdist() > si.dist()) &&
+    if ((table.highdist() > si.dist()) &&
         ((c->center < first) || (c->center > last)))
-      nearneigh_searcher<POINT_SET>::table.insert(
-          neighbor(c->center, si.dist()));
+      table.insert(neighbor(c->center, si.dist()));
 
-    if (nearneigh_searcher<POINT_SET>::table.highdist() >=
-        (si.d_min() *
-         (1.0 +
-          epsilon))) { // approximative (epsilon > 0) queries are supported
+    // Support approximative (epsilon > 0) queries.
+    if (table.highdist() >= (si.d_min() * (1.0 + epsilon))) {
       if (c->is_terminal()) {
         const neighbor *const Section = permutation_table + c->start;
         terminal_cluster_searched++;
 
+        // Do all points in the cluster coincide ?
         if (c->Rmax == 0.0) {
           for (long i = 0; i < c->length; i++) {
             const long j = Section[i].index();
 
-            if (nearneigh_searcher<POINT_SET>::table.highdist() <= si.dist())
+            if (table.highdist() <= si.dist())
               break;
 
             if ((j < first) || (j > last))
-              nearneigh_searcher<POINT_SET>::table.insert(
-                  neighbor(j, si.dist()));
+              table.insert(neighbor(j, si.dist()));
           }
         } else {
           for (long i = 0; i < c->length; i++) {
             const long j = Section[i].index();
 
             if ((j < first) || (j > last)) {
-              if (nearneigh_searcher<POINT_SET>::table.highdist() >
-                  fabs(si.dist() - Section[i].dist()))
-                nearneigh_searcher<POINT_SET>::test(j, query_point, nearneigh_searcher<POINT_SET>::table.highdist());
+              if (table.highdist() > fabs(si.dist() - Section[i].dist()))
+                test(j, query_point, table.highdist());
             }
           }
         }
-      } else { // this is an internal node
+      } else {
+        // This is an internal node.
         const double dl = nearneigh_searcher<POINT_SET>::points.distance(
             c->left->center, query_point);
         const double dr = nearneigh_searcher<POINT_SET>::points.distance(
@@ -657,13 +647,12 @@ long ATRIA<POINT_SET>::count_range(const double radius,
                                    const long first, const long last) {
   long count = 0;
 
-#ifdef PROFILE
   number_of_queries++;
   points_searched++;
-#endif
 
+  // Make shure stack is empty.
   while (!SearchStack.empty())
-    SearchStack.pop(); // make shure stack is empty
+    SearchStack.pop();
 
   SearchStack.push(
       SearchItem(root, nearneigh_searcher<POINT_SET>::points.distance(

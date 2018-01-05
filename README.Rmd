@@ -12,7 +12,8 @@ The atriar package contains two sets of functions for computing fractal or intri
 
 *Nearest neighbor* based methods allow the estimation of the [correlation sum](https://en.wikipedia.org/wiki/Correlation_integral). and related properties. The correlation dimension is one of the intrinsic dimensions of a data set and can be viewed as a measure of its complexity. It is expected that the performance of many machine learning algorithms depends on the intrinsic dimension of the input data. 
 
-This package contains an implementation of the [ATRIA nearest neighbor algorithm](https://www.researchgate.net/publication/12238515_Fast_nearest-neighbor_searching_for_nonlinear_signal_processing). which is a variant of the ball-tree algorithm family. It supports both exact and approximate k-nearest neighbor and range searches.
+This package contains an implementation of the [ATRIA nearest neighbor algorithm](https://www.researchgate.net/publication/12238515_Fast_nearest-neighbor_searching_for_nonlinear_signal_processing). which is a variant of the ball-tree algorithm family. It supports both exact and approximate k-nearest neighbor and range searches. During preprocessing, a search tree is constructed by dividing the set of points in two (sub)clusters. Each cluster is than subdivided until a minimum number of points is reached
+When performing a query, the triangle inequality is used to exclude cluster from further searching. ATRIA might be a good choice for unevenly distributed points in very high dimensional spaces.
 
 *Boxcounting* methods bin the points of a data set into a D-dimensional grid and compute various statistics
 based on the distribution of points into grid boxes. Counting the number of non-empty boxes at different
@@ -221,46 +222,6 @@ plot(log(res$dists), res$corrd[, 2])
 x <- log2(res$dists)
 y <- res$boxd[, 2]
 print(lm(y ~ x, data = data.frame(x = x, y = y)[10:24,]))
-```
-
-
-## Benchmarking against other packages
-
-``` r
-library(RcppAnnoy)
-library(RANN)
-library(microbenchmark)
-library(h5)
-
-file <- h5file('/Users/cmerk/Downloads/mnist-784-euclidean.hdf5', mode='r')
-train <- file['train'][]
-test <- file['test'][]
-expected.distances <- file['distances']
-expected.neighbors <- file['neighbors']
-
-
-set.seed(123)                           # be reproducible
-
-#h <- henon(1e5, params = c(-1.4, 0.3, 0.1 * runif(2)))
-#h_test <- henon(1e4, params = c(-1.4, 0.3, 0.1 * runif(2)))
-
-a <- new(AnnoyEuclidean, ncol(train))
-for (i in seq(nrow(train))) {
-  a$addItem(i-1, train[i, ])
-}
-a$build(50)                           	# 50 trees
-
-k <- 10
-
-nn.annoy <- apply(test, 1, function(x) { a$getNNsByVector(x, k) } )
-
-
-s <- create_searcher(train)
-nn.atria <- search_k_neighbors(searcher = s,
-                         k = k,
-                         query_points = test,
-                         epsilon = 0.00)
-release_searcher(s)
 ```
 
 
