@@ -40,14 +40,11 @@ public:
 #undef RANGE_LT1
 #undef MT_BUFSZ
 
-class My_Utilities { // some utility functions
-private:
-  RNG rng; // random number generator
-
+class My_Utilities : public RNG { // some utility functions
 public:
   // define a function that returns a random indices out of 0,1,2, ... ,N-1
   uint32 randindex(const unsigned long N) {
-    double X = rng.dRand();
+    double X = RNG::dRand();
     uint32 R = (uint32)floor(X * ((double)N));
     return R;
   }

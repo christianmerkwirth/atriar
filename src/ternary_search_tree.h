@@ -30,9 +30,8 @@ protected:
 
   Tptr freearr[TST_BUFFERS];
 
-  const long len; // key length
   Tptr root;      // tree root node
-
+  const long len; // key length
   long nr_total_nodes;
 
 public:
@@ -45,7 +44,7 @@ public:
 
 template <class KEY>
 ternary_search_tree<KEY>::ternary_search_tree(const long keylength)
-    : bufn(0), freen(0), root(0), next_buf_size(TST_BUFSIZE), old_buf_size(0),
+    : buf(0), next_buf_size(TST_BUFSIZE), old_buf_size(0), bufn(0), freen(0), root(0),
       len(keylength), nr_total_nodes(0) {}
 
 // return 0 on SUCCESS

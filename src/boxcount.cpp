@@ -21,15 +21,14 @@ inline double max(double a, double b) { return ((a >= b) ? a : b); }
 inline double min(double a, double b) { return ((a <= b) ? a : b); }
 
 class dim_estimator {
-protected:
+private:
+  const long N_;
+  const long dim_;
+  long total_points_;
+
   vector<long> boxes_;   // scaling of number of boxes for dimensions from 1 to dim
   vector<double> info_;  // scaling of information for dimensions from 1 to dim
   vector<double> corr_;  // scaling of correlation for dimensions from 1 to dim
-
-  const long dim_;
-  const long N_;
-  long total_points_;
-
 public:
   dim_estimator(const long n, const long dim)
       : N_(n), dim_(dim), total_points_(0), boxes_(dim), info_(dim), corr_(dim) {}

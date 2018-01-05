@@ -28,7 +28,7 @@ public:
   Searcher(const Searcher &) = delete;
 
   Searcher(const Rcpp::NumericMatrix x, const std::string metric,
-           const long excl = 0, const long minpts = 64)
+           const long excl = 0, const long minpts = 64, const uint32 seed = 9345356234)
       : metric_("euclidian"), euclidian_(nullptr), manhattan_(nullptr),
         maximum_(nullptr), hamming_(nullptr) {
     // Sanitize input metric.
@@ -48,19 +48,19 @@ public:
     if (metric_ == "euclidian") {
       rm_point_set<euclidian_distance> points(x);
       euclidian_ = new ATRIA<rm_point_set<euclidian_distance>>(
-          std::move(points), excl, minpts);
+          std::move(points), excl, minpts, seed);
     } else if (metric_ == "manhattan") {
       rm_point_set<manhattan_distance> points(x);
       manhattan_ = new ATRIA<rm_point_set<manhattan_distance>>(
-          std::move(points), excl, minpts);
+          std::move(points), excl, minpts, seed);
     } else if (metric_ == "maximum") {
       rm_point_set<maximum_distance> points(x);
       maximum_ = new ATRIA<rm_point_set<maximum_distance>>(std::move(points),
-                                                           excl, minpts);
+                                                           excl, minpts, seed);
     } else if (metric_ == "hamming") {
       rm_point_set<hamming_distance> points(x);
       hamming_ = new ATRIA<rm_point_set<hamming_distance>>(std::move(points),
-                                                           excl, minpts);
+                                                           excl, minpts, seed);
     }
   }
   ~Searcher() {
