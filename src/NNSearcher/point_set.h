@@ -43,7 +43,10 @@ public:
   rm_point_set() = delete;
   rm_point_set(const rm_point_set& from) = delete;
   rm_point_set(const Rcpp::NumericMatrix& m)
-    : point_set_base<METRIC>(m.nrow()), D(m.ncol()), matrix_ptr(new float[m.nrow() * m.ncol()]), Distance(){
+    : point_set_base<METRIC>(m.nrow()),
+      D(m.ncol()),
+      matrix_ptr((float *)_mm_malloc(m.nrow() * m.ncol()*sizeof(float), 64)),
+      Distance(){
       for (long n=0; n < point_set_base<METRIC>::N; n++) {
         const auto v = m(n, Rcpp::_);
         std::copy(v.begin(), v.end(), matrix_ptr + n*D);
@@ -69,7 +72,7 @@ public:
       Rcpp::Rcout << "Point set destructor called." << std::endl;
     }
 #endif
-    delete[] matrix_ptr;
+    _mm_free(matrix_ptr);
   };
   inline long dimension() const { return D; };
 

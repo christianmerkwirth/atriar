@@ -6,9 +6,10 @@
 
 using namespace Rcpp;
 
+#include "portable_intrinsics.h"
 #include "../src/NNSearcher/metric.h"
 #include "../src/NNSearcher/point_set.h"
-#include "portable_intrinsics.h"
+
 
 float L2SqrSIMD(const float* pVect1, const float* pVect2, size_t qty) {
   size_t qty4  = qty/4;
@@ -22,30 +23,30 @@ float L2SqrSIMD(const float* pVect1, const float* pVect2, size_t qty) {
   __m128  sum = _mm_set1_ps(0);
 
   while (pVect1 < pEnd1) {
-    v1   = _mm_loadu_ps(pVect1); pVect1 += 4;
-    v2   = _mm_loadu_ps(pVect2); pVect2 += 4;
+    v1   = *((__m128*)pVect1); pVect1 += 4;
+    v2   = *((__m128*)pVect2); pVect2 += 4;
     diff = _mm_sub_ps(v1, v2);
     sum  = _mm_add_ps(sum, _mm_mul_ps(diff, diff));
 
-    v1   = _mm_loadu_ps(pVect1); pVect1 += 4;
-    v2   = _mm_loadu_ps(pVect2); pVect2 += 4;
+    v1   = *((__m128*)pVect1); pVect1 += 4;
+    v2   = *((__m128*)pVect2); pVect2 += 4;
     diff = _mm_sub_ps(v1, v2);
     sum  = _mm_add_ps(sum, _mm_mul_ps(diff, diff));
 
-    v1   = _mm_loadu_ps(pVect1); pVect1 += 4;
-    v2   = _mm_loadu_ps(pVect2); pVect2 += 4;
+    v1   = *((__m128*)pVect1); pVect1 += 4;
+    v2   = *((__m128*)pVect2); pVect2 += 4;
     diff = _mm_sub_ps(v1, v2);
     sum  = _mm_add_ps(sum, _mm_mul_ps(diff, diff));
 
-    v1   = _mm_loadu_ps(pVect1); pVect1 += 4;
-    v2   = _mm_loadu_ps(pVect2); pVect2 += 4;
+    v1   = *((__m128*)pVect1); pVect1 += 4;
+    v2   = *((__m128*)pVect2); pVect2 += 4;
     diff = _mm_sub_ps(v1, v2);
     sum  = _mm_add_ps(sum, _mm_mul_ps(diff, diff));
   }
 
   while (pVect1 < pEnd2) {
-    v1   = _mm_loadu_ps(pVect1); pVect1 += 4;
-    v2   = _mm_loadu_ps(pVect2); pVect2 += 4;
+    v1   = *((__m128*)pVect1); pVect1 += 4;
+    v2   = *((__m128*)pVect2); pVect2 += 4;
     diff = _mm_sub_ps(v1, v2);
     sum  = _mm_add_ps(sum, _mm_mul_ps(diff, diff));
   }
@@ -60,7 +61,7 @@ float L2SqrSIMD(const float* pVect1, const float* pVect2, size_t qty) {
     res += diff * diff;
   }
 
-  return res;
+  return sqrt(res);
 }
 
 // [[Rcpp::export]]
@@ -81,9 +82,9 @@ NumericMatrix all_distances2(NumericMatrix x) {
   NumericMatrix out(x.nrow(), x.nrow());
   for (long i=0; i < x.nrow(); i++) {
     for (long j=0; j < x.nrow(); j++) {
-      out(i,j) = sqrt(L2SqrSIMD(points.point_begin(i),
+      out(i,j) = L2SqrSIMD(points.point_begin(i),
                            points.point_begin(j),
-                           points.dimension()));
+                           points.dimension());
     }
   }
   return out;
@@ -106,14 +107,14 @@ NumericMatrix all_distances3(arma::mat X) {
 /*** R
 cat("Method Plain")
   system.time({
-    result1 <- all_distances(test[1:2000, ])
+    result1 <- all_distances(test[1:4000, ])
   })
   cat("Method SIMD")
   system.time({
-    result2 <- all_distances2(test[1:2000, ])
+    result2 <- all_distances2(test[1:4000, ])
   })
   cat("Method Armadillo")
   system.time({
-    result3 <- all_distances3(test[1:2000, ])
+    result3 <- all_distances3(test[1:4000, ])
   })
   */

@@ -24,7 +24,6 @@
 #define PORTABLE_SSE4
 #endif
 
-
 #if defined(PORTABLE_SSE4)
 #include <portable_simd.h>
 
