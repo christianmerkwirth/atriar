@@ -18,7 +18,7 @@ distlimits <- function(searcher, data) {
   min.dist <- 0
   d <- 1
   while ((min.dist == 0) && (d < ncol(nn$dist))) {
-    min.dist <- quantile(nn$dist[, d], probs = 0.20)
+    min.dist <- stats::quantile(nn$dist[, d], probs = 0.20)
     d <- d + 1
   }
   if (min.dist == 0) {

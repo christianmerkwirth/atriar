@@ -42,7 +42,7 @@ public:
     total_points_ += mass;                    // Check we got all points.
     if (mass)
       boxes_[level]++;                          // Count boxes with at least one point
-    info_[level] += (p_i * log2(p_i));        // entropy
+    info_[level] += -(p_i * log2(p_i));        // entropy
     corr_[level] += p_i * p_i;                // correlation
   }
 
@@ -51,9 +51,9 @@ public:
     return total_points_;
   }
   // Functions to read out results below.
-  double boxd(const long d) const { return -log2(boxes_[d]); }
+  double boxd(const long d) const { return boxes_[d]; }
   double infod(const long d) const { return info_[d]; }
-  double corrd(const long d) const { return log2(corr_[d]); }
+  double corrd(const long d) const { return corr_[d]; }
 };
 
 // [[Rcpp::export]]
@@ -104,7 +104,7 @@ List boxcount(IntegerMatrix x, bool verbose = false) {
     infod(d) = estimator.infod(d);
     corrd(d) = estimator.corrd(d);
   }
-  return List::create(Named("boxd") = boxd,
-                      Named("infod") = infod,
-                      Named("corrd") = corrd);
+  return List::create(Named("boxes") = boxd,
+                      Named("entropy") = infod,
+                      Named("correlation") = corrd);
 }

@@ -1,26 +1,26 @@
 boxcounting <- function(data, dist.breaks) {
-  boxd <- numeric()
-  infod <- numeric()
-  corrd <- numeric()
+  boxes <- numeric()
+  entropy <- numeric()
+  correlation <- numeric()
   for (dist in dist.breaks) {
     x <- data / dist
     mode(x) <- 'integer'
     bc <- boxcount(x)
-    if (length(boxd) == 0) {
-      boxd <- bc$boxd
-      infod <- bc$infod
-      corrd <- bc$corrd
+    if (length(boxes) == 0) {
+      boxes <- bc$boxes
+      entropy <- bc$entropy
+      correlation <- bc$correlation
     } else {
-      boxd <- rbind(boxd, bc$boxd)
-      infod <- rbind(infod, bc$infod)
-      corrd <- rbind(corrd, bc$corrd)
+      boxes <- rbind(boxes, bc$boxes)
+      entropy <- rbind(entropy, bc$entropy)
+      correlation <- rbind(correlation, bc$correlation)
     }
   }
   return(
     list(
       dists = dist.breaks,
-      boxd = boxd,
-      infod = infod,
-      corrd = corrd
+      boxes = boxes,
+      entropy = entropy,
+      correlation = correlation
     ))
 }
