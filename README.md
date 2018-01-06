@@ -142,9 +142,9 @@ microbenchmark(
     ##                                                                     expr
     ##               search_k_neighbors(searcher, k.max, points[rand.sample, ])
     ##  search_k_neighbors(searcher, k.max, points[rand.sample, ], epsilon = 3)
-    ##      min      lq   mean median     uq    max neval
-    ##  2626.37 2875.22 3078.6 3043.1 3266.5 3514.1    10
-    ##   809.47  930.09 1017.9 1044.2 1116.8 1182.8    10
+    ##      min      lq    mean  median      uq     max neval
+    ##  2311.45 2334.50 2371.54 2348.98 2382.29 2540.93    10
+    ##   742.78  747.23  778.14  767.19  801.22  845.23    10
 
 ``` r
 # Cleanup, delete the searcher object.
@@ -246,7 +246,7 @@ mode(X) <- "integer"
 y.unique <- unique(X);
 bc <- boxcount(X)
 
-boxes.count <- 2^(-bc$boxd[D])
+boxes.count <- bc$boxes[D]
 unique.count <- nrow(y.unique)
 
 round(boxes.count) == unique.count
@@ -260,9 +260,9 @@ microbenchmark(boxcount(X), unique(X), times=10)
 ```
 
     ## Unit: milliseconds
-    ##         expr     min      lq    mean  median     uq     max neval
-    ##  boxcount(X)  46.969  49.967  51.635  52.702  53.30  54.353    10
-    ##    unique(X) 603.647 640.841 675.917 697.356 700.08 745.980    10
+    ##         expr     min      lq    mean  median      uq     max neval
+    ##  boxcount(X)  47.025  47.695  49.537  48.582  50.772  54.072    10
+    ##    unique(X) 579.433 626.349 654.070 661.681 690.049 698.483    10
 
 Dimension Estimation
 --------------------
@@ -388,7 +388,7 @@ We also can use boxcouting to get a rough estimate of the capacity dimension:
 res <- boxcounting(data, dist.breaks)
 
 x <- log2(res$dists)
-y <- res$boxd[, 2]
+y <- -log2(res$boxes[, 2])
 
 plot(x, y)
 ```

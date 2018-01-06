@@ -165,7 +165,7 @@ mode(X) <- "integer"
 y.unique <- unique(X);
 bc <- boxcount(X)
 
-boxes.count <- 2^(-bc$boxd[D])
+boxes.count <- bc$boxes[D]
 unique.count <- nrow(y.unique)
 
 round(boxes.count) == unique.count
@@ -222,7 +222,7 @@ We also can use boxcouting to get a rough estimate of the capacity dimension:
 res <- boxcounting(data, dist.breaks)
 
 x <- log2(res$dists)
-y <- res$boxd[, 2]
+y <- -log2(res$boxes[, 2])
 
 plot(x, y)
 
