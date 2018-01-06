@@ -1,4 +1,5 @@
 useDynLib(atriar, .registration=TRUE)
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
+importFrom("stats", "quantile")
 
