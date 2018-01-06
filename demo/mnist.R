@@ -1,3 +1,4 @@
+library(atriar)
 library(h5)
 
 fileURL <- "http://vectors.erikbern.com/mnist-784-euclidean.hdf5"

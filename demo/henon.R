@@ -1,3 +1,5 @@
+library(atriar)
+
 # Create a downsampled data set of the terated Henon map.
 data <- henon(2e6, params = c(-1.4, 0.3, 0.1 * runif(2)))
 data <- data[sample.int(n = nrow(data), size = 2e5), ]
