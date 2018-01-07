@@ -1,6 +1,6 @@
 Package: atriar
 Title: Fast exact and approximate nearest neighbors and fast boxcounting with ternary search trees.
-Version: 0.0.0.9000
+Version: 0.0.2.1
 Authors@R: person("Christian", "Merkwirth", email = "ChristianMerkwirth@gmail.com", role = c("aut", "cre"))
 Description: Code for fast nearest neighbor and range searches, plus utilities to calculate fractal dimensions.
 Depends: R (>= 3.4.0)
