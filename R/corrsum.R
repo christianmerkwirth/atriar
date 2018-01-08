@@ -2,6 +2,23 @@
 #' @importFrom Rcpp sourceCpp
 NULL
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param searcher PARAM_DESCRIPTION
+#' @param data PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[stats]{quantile}}
+#' @rdname distlimits
+#' @export
+#' @importFrom stats quantile
 distlimits <- function(searcher, data) {
   N <- nrow(data)
   k.max <- ceiling(0.10 * N)
@@ -29,10 +46,46 @@ distlimits <- function(searcher, data) {
   return(c(min.dist, max.dist))
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param min.dist PARAM_DESCRIPTION
+#' @param max.dist PARAM_DESCRIPTION
+#' @param n.bins PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname logspace
+#' @export
 logspace <- function(min.dist, max.dist, n.bins) {
   exp(seq(log(min.dist), log(max.dist), length.out=n.bins))
 }
 
+#' @title FUNCTION_TITLE
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param searcher PARAM_DESCRIPTION
+#' @param data PARAM_DESCRIPTION
+#' @param dist.breaks PARAM_DESCRIPTION
+#' @param min.actual.pairs PARAM_DESCRIPTION, Default: 2000
+#' @param min.nr.samples.at.scale PARAM_DESCRIPTION, Default: 128
+#' @param max.nr.samples.at.scale PARAM_DESCRIPTION, Default: 1024
+#' @param batch.size PARAM_DESCRIPTION, Default: 32
+#' @param verbose PARAM_DESCRIPTION, Default: FALSE
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname corrsum
+#' @export
 corrsum <-
   function(searcher,
            data,
