@@ -4,6 +4,7 @@
 * explore optimization of the atria algorithm:
    - parameter tuning
    - spill-over trees
+   - SIMD distance caluclation(!)
    - allowing to build search trees with wrong (lower) Rmax
    - store Rmax and Rmedian, use Rmedian for approximate searches
    - compute cluster centroids to reduce Rmax
