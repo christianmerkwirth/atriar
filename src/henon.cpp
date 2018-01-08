@@ -3,6 +3,14 @@
 using namespace std;
 using namespace Rcpp;
 
+//' Leading NA
+//'
+//' This function returns a logical vector identifying if
+//' there are leading NA, marking the leadings NA as TRUE and
+//' everything else as FALSE.
+//'
+//' @param x An integer vector
+//' @export
 // [[Rcpp::export]]
 NumericMatrix henon(long length = 2000,
                     NumericVector params = NumericVector::create(),
@@ -16,19 +24,19 @@ NumericMatrix henon(long length = 2000,
   if (params.size() != 4) {
     stop("Need parameter vector of length 4 (a,b,x0,y0)");
   }
-  
+
   NumericMatrix out(length, 2);
-  
+
   const double a = params(0);
   const double b = params(1);
-  
+
   double xn = params(2);
   double yn = params(3);
-  
+
   for (long i = 0; i < length + transient; i++) {
     const double xn1 = 1 + a * xn * xn + b * yn;
     const double yn1 = xn;
-    
+
     if (fabs(xn1) > 1000000) {
       Rcpp::Rcerr << "Values exceed threshold of 1000000, limiting values"
                   << std::endl;

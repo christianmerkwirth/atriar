@@ -56,6 +56,20 @@ public:
   double corrd(const long d) const { return corr_[d]; }
 };
 
+//' @title FUNCTION_TITLE
+//' @description FUNCTION_DESCRIPTION
+//' @param x PARAM_DESCRIPTION
+//' @param verbose PARAM_DESCRIPTION, Default: FALSE
+//' @return OUTPUT_DESCRIPTION
+//' @details DETAILS
+//' @examples
+//' \dontrun{
+//' if(interactive()){
+//'  #EXAMPLE1
+//'  }
+//' }
+//' @rdname boxcount
+//' @export
 // [[Rcpp::export]]
 List boxcount(IntegerMatrix x, bool verbose = false) {
   const long N = x.nrow();

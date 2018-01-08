@@ -4,6 +4,13 @@
 
 using namespace Rcpp;
 
+//' Compute a histogram of positive integers.
+//'
+//' Fast counting of positve integers in input vector bins.
+//'
+//' @param bins An integer vector with positive entries only.
+//' @param max_bin An integer with the maximum expected bin in bins.
+//' @export
 // [[Rcpp::export]]
 IntegerVector count_integers(IntegerVector bins, long max_bin = -1) {
   // Count positive integers.
@@ -14,7 +21,7 @@ IntegerVector count_integers(IntegerVector bins, long max_bin = -1) {
     throw Rcpp::exception("Values in bins must be positive.");
   }
   IntegerVector count(max_bin);
-  
+
   for (auto bin : bins) {
     if (bin < 1) {
       throw Rcpp::exception("Values in bins must be positive.");

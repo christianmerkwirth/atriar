@@ -6,6 +6,24 @@ using namespace Rcpp;
 
 #include "atria.h"
 
+//' Create ATRIA searcher (ball-tree).
+//' @title FUNCTION_TITLE
+//' @description FUNCTION_DESCRIPTION
+//' @param x PARAM_DESCRIPTION
+//' @param metric PARAM_DESCRIPTION, Default: 'euclidian'
+//' @param exclude_samples PARAM_DESCRIPTION, Default: 0
+//' @param cluster_max_points PARAM_DESCRIPTION, Default: 64
+//' @param seed PARAM_DESCRIPTION, Default: 93453562
+//' @return OUTPUT_DESCRIPTION
+//' @details DETAILS
+//' @examples
+//' \dontrun{
+//' if(interactive()){
+//'  #EXAMPLE1
+//'  }
+//' }
+//' @rdname create_searcher
+//' @export
 // [[Rcpp::export]]
 XPtr<Searcher> create_searcher(NumericMatrix x,
                                const string metric = "euclidian",
@@ -18,22 +36,95 @@ XPtr<Searcher> create_searcher(NumericMatrix x,
   return searcher;
 }
 
+//' Release searcher
+//'
+//' Destroy ATRIA searcher object and free all allocated memory.
+//' @title FUNCTION_TITLE
+//' @description FUNCTION_DESCRIPTION
+//' @param searcher PARAM_DESCRIPTION
+//' @return OUTPUT_DESCRIPTION
+//' @details DETAILS
+//' @examples
+//' \dontrun{
+//' if(interactive()){
+//'  #EXAMPLE1
+//'  }
+//' }
+//' @rdname release_searcher
+//' @export
 //[[Rcpp::export]]
 bool release_searcher(XPtr<Searcher> searcher) {
   searcher.release();
   return !searcher;
 }
 
+//' Number of points,
+//'
+//' Return number of points used to create the searcher.
+//'
+//' @param searcher An exernal pointer to an ATRIA searcher.
+//' @title FUNCTION_TITLE
+//' @description FUNCTION_DESCRIPTION
+//' @param searcher PARAM_DESCRIPTION
+//' @return OUTPUT_DESCRIPTION
+//' @details DETAILS
+//' @examples
+//' \dontrun{
+//' if(interactive()){
+//'  #EXAMPLE1
+//'  }
+//' }
+//' @rdname number_of_points
+//' @export
 //[[Rcpp::export]]
 long number_of_points(XPtr<Searcher> searcher) {
   return searcher->number_of_points();
 }
 
+//' Data set radius
+//'
+//' This function returns a logical vector identifying if
+//' there are leading NA, marking the leadings NA as TRUE and
+//' everything else as FALSE.
+//'
+//' @param x An integer vector
+//' @export
+//' @title FUNCTION_TITLE
+//' @description FUNCTION_DESCRIPTION
+//' @param searcher PARAM_DESCRIPTION
+//' @return OUTPUT_DESCRIPTION
+//' @details DETAILS
+//' @examples
+//' \dontrun{
+//' if(interactive()){
+//'  #EXAMPLE1
+//'  }
+//' }
+//' @rdname data_set_radius
+//' @export
 //[[Rcpp::export]]
 double data_set_radius(XPtr<Searcher> searcher) {
   return searcher->data_set_radius();
 }
 
+
+//' @title FUNCTION_TITLE
+//' @description FUNCTION_DESCRIPTION
+//' @param searcher PARAM_DESCRIPTION
+//' @param k PARAM_DESCRIPTION
+//' @param query_points PARAM_DESCRIPTION
+//' @param exclude PARAM_DESCRIPTION, Default: matrix()
+//' @param epsilon PARAM_DESCRIPTION, Default: 0
+//' @return OUTPUT_DESCRIPTION
+//' @details DETAILS
+//' @examples
+//' \dontrun{
+//' if(interactive()){
+//'  #EXAMPLE1
+//'  }
+//' }
+//' @rdname search_k_neighbors
+//' @export
 //[[Rcpp::export]]
 List search_k_neighbors(XPtr<Searcher> searcher, const long k,
                         NumericMatrix query_points,
@@ -78,6 +169,22 @@ List search_k_neighbors(XPtr<Searcher> searcher, const long k,
   return List::create(Named("index") = index, Named("dist") = dist);
 }
 
+//' @title FUNCTION_TITLE
+//' @description FUNCTION_DESCRIPTION
+//' @param searcher PARAM_DESCRIPTION
+//' @param radius PARAM_DESCRIPTION
+//' @param query_points PARAM_DESCRIPTION
+//' @param exclude PARAM_DESCRIPTION, Default: matrix()
+//' @return OUTPUT_DESCRIPTION
+//' @details DETAILS
+//' @examples
+//' \dontrun{
+//' if(interactive()){
+//'  #EXAMPLE1
+//'  }
+//' }
+//' @rdname search_range
+//' @export
 //[[Rcpp::export]]
 List search_range(XPtr<Searcher> searcher, const double radius,
                   NumericMatrix query_points,
