@@ -10,10 +10,10 @@ output:
 
 The atriar package contains two sets of functions for computing fractal or intrinsic dimensions of data sets.
 
-*Nearest neighbor* based methods allow the estimation of the [correlation sum](https://en.wikipedia.org/wiki/Correlation_integral). and related properties. The correlation dimension is one of the intrinsic dimensions of a data set and can be viewed as a measure of its complexity. It is expected that the performance of many machine learning algorithms depends on the intrinsic dimension of the input data. 
+*Nearest neighbor* based methods allow the estimation of the [correlation dimension](https://en.wikipedia.org/wiki/Correlation_integral) and related properties. The correlation dimension is one of the intrinsic dimensions of a data set and can be viewed as a measure of its complexity. It is expected that the performance of many machine learning algorithms depends on the intrinsic dimension of the input data.
 
 This package contains an implementation of the [ATRIA nearest neighbor algorithm](https://www.researchgate.net/publication/12238515_Fast_nearest-neighbor_searching_for_nonlinear_signal_processing). which is a variant of the ball-tree algorithm family. It supports both exact and approximate k-nearest neighbor and range searches. During preprocessing, a search tree is constructed by dividing the set of points in two (sub)clusters. Each cluster is than subdivided until a minimum number of points is reached
-When performing a query, the triangle inequality is used to exclude cluster from further searching. ATRIA might be a good choice for unevenly distributed points in very high dimensional spaces.
+When performing a query, the triangle inequality is used to exclude cluster from further searching. ATRIA might be a good choice for unevenly distributed points in moderately high dimensional spaces.
 
 *Boxcounting* methods bin the points of a data set into a D-dimensional grid and compute various statistics
 based on the distribution of points into grid boxes. Counting the number of non-empty boxes at different
@@ -73,7 +73,7 @@ nn <- search_k_neighbors(
     query_points = points[rand.sample, ],
     exclude = cbind(rand.sample, rand.sample)
   )
-  
+
 str(nn)
 
 # Cleanup, delete the searcher object.
@@ -135,7 +135,7 @@ nn <- search_range(
   # so we avoid counting the same pairwise distance twice.
   exclude = cbind(rep(-1, 4), rand.sample)
 )
-  
+
 str(nn)
 
 # Cleanup, delete the searcher object.
